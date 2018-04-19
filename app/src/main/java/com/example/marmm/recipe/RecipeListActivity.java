@@ -2,7 +2,6 @@ package com.example.marmm.recipe;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Movie;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +20,7 @@ import com.example.marmm.recipe.Utility.ApiInterface;
 import com.example.marmm.recipe.dummy.DummyContent;
 import com.example.marmm.recipe.model.Recipe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -43,46 +43,32 @@ public class RecipeListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
 
+    SimpleItemRecyclerViewAdapter mAdapter = null;
+    private List<Recipe> mRecipes = new ArrayList<>();;
+    RecyclerView recyclerView = null;
+    public static RecipeListActivity parentContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
+
+        parentContext = RecipeListActivity.this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
 
-        ApiInterface apiService =
-                ApiClient.getClient().create(ApiInterface.class);
-
-        Call<Recipe> call = apiService.getRecipe();
-        call.enqueue(new Callback<Recipe>() {
-                         @Override
-                         public void onResponse(Call<Recipe> call, Response<Recipe> response) {
-                           Recipe recipes = response.body();
-                           Log.d(" marco", recipes.getName());
-                         }
-
-                         @Override
-                         public void onFailure(Call<Recipe> call, Throwable t) {
-                             // Log error here since request failed
-                             //    Log.e(TAG, t.toString());
-                         }
-
-                     });
-
-
-
-
             FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, mRecipes.size()+"", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
+
 
         if (findViewById(R.id.recipe_detail_container) != null) {
             // The detail container view will be present only in the
@@ -92,20 +78,51 @@ public class RecipeListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        View recyclerView = findViewById(R.id.recipe_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        recyclerView= findViewById(R.id.recipe_list);
+        //assert recyclerView != null;
+
+        ApiInterface apiService =
+                ApiClient.getClient().create(ApiInterface.class);
+        Call<ArrayList<Recipe>> recipe = apiService.getRecipe();
+        Log.d(" marco", "hello");
+
+        recipe.enqueue(new Callback<ArrayList<Recipe>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Recipe>> call, Response<ArrayList<Recipe>> response) {
+                mRecipes = response.body();
+                Log.d(" marco1", mRecipes.get(1).getName());
+                Log.d(" marco4", mRecipes.size()+"");
+                mAdapter = new SimpleItemRecyclerViewAdapter(RecipeListActivity.parentContext, mRecipes, mTwoPane);
+                recyclerView.setAdapter (mAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Recipe>> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("marco2", t.toString());
+            }
+
+        });
+
+
+        //setupRecyclerView((RecyclerView) recyclerView);
+
+
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
-    }
+    /*private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        //recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
 
+        Log.d(" marco3", mRecipes.size()+"");
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, mRecipes, mTwoPane));
+    }
+*/
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final RecipeListActivity mParentActivity;
-        private final List<DummyContent.DummyItem> mValues;
+        //private final List<DummyContent.DummyItem> mValues;
+        private final List<Recipe> mValues;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
@@ -130,7 +147,7 @@ public class RecipeListActivity extends AppCompatActivity {
         };
 
         SimpleItemRecyclerViewAdapter(RecipeListActivity parent,
-                                      List<DummyContent.DummyItem> items,
+                                      List<Recipe> items,
                                       boolean twoPane) {
             mValues = items;
             mParentActivity = parent;
@@ -146,8 +163,8 @@ public class RecipeListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(mValues.get(position).getId());
+            holder.mContentView.setText(mValues.get(position).getName());
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);

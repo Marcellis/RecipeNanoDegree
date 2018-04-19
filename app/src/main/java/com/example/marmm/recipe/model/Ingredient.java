@@ -2,15 +2,15 @@ package com.example.marmm.recipe.model;
 
 public class Ingredient {
 
-    private Integer quantity;
+    private String quantity;
     private String measure;
     private String ingredient;
 
-    public Integer getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 

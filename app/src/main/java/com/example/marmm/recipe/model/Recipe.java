@@ -4,18 +4,18 @@ import java.util.List;
 
 public class Recipe {
 
-    private Integer id;
+    private String id;
     private String name;
     private List<Ingredient> ingredients = null;
     private List<Step> steps = null;
     private Integer servings;
     private String image;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
