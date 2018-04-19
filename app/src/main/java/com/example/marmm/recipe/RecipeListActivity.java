@@ -1,4 +1,4 @@
-package com.example.marmm.recipe;
+ package com.example.marmm.recipe;
 
 import android.content.Context;
 import android.content.Intent;
@@ -104,19 +104,8 @@ public class RecipeListActivity extends AppCompatActivity {
 
         });
 
-
-        //setupRecyclerView((RecyclerView) recyclerView);
-
-
     }
 
-    /*private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        //recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
-
-        Log.d(" marco3", mRecipes.size()+"");
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, mRecipes, mTwoPane));
-    }
-*/
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -181,8 +170,8 @@ public class RecipeListActivity extends AppCompatActivity {
 
             ViewHolder(View view) {
                 super(view);
-                mIdView = (TextView) view.findViewById(R.id.id_text);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                mIdView =  view.findViewById(R.id.id_text);
+                mContentView =  view.findViewById(R.id.content);
             }
         }
     }
